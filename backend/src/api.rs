@@ -303,10 +303,7 @@ pub fn create_router(state: Arc<AppState>) -> Router {
     // Admin routes requiring JWT authentication
     let admin_routes = Router::new()
         .route("/api/plans/{id}/report", get(get_plan_report))
-        .route(
-            "/api/analytics/plan-statistics",
-            get(get_plan_statistics),
-        )
+        .route("/api/analytics/plan-statistics", get(get_plan_statistics))
         .route_layer(from_fn(jwt_auth_middleware));
 
     // Loan lifecycle: admin JWT or wallet signature.

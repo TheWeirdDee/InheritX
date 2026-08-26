@@ -252,7 +252,8 @@ impl PlanCache {
                     .get_multiplexed_async_connection()
                     .await
                     .map_err(CacheError::Redis)?;
-                let cached: Option<String> = conn.get(cache_key).await.map_err(CacheError::Redis)?;
+                let cached: Option<String> =
+                    conn.get(cache_key).await.map_err(CacheError::Redis)?;
                 Ok(cached)
             }
             Self::Memory(store) => {
@@ -262,7 +263,12 @@ impl PlanCache {
         }
     }
 
-    async fn set_raw(&self, cache_key: &str, payload: &str, ttl_secs: u64) -> Result<(), CacheError> {
+    async fn set_raw(
+        &self,
+        cache_key: &str,
+        payload: &str,
+        ttl_secs: u64,
+    ) -> Result<(), CacheError> {
         match self {
             Self::Disabled => Ok(()),
             #[cfg(feature = "redis-cache")]
@@ -498,9 +504,16 @@ mod tests {
             asset_type: Some("USDC".to_string()),
         };
         let key = plan_statistics_cache_key(&query);
-        let stats = vec![("ACTIVE".to_string(), 3_i64), ("TRIGGERED".to_string(), 1_i64)];
+        let stats = vec![
+            ("ACTIVE".to_string(), 3_i64),
+            ("TRIGGERED".to_string(), 1_i64),
+        ];
 
-        assert!(cache.get_stats::<Vec<(String, i64)>>(&key).await.unwrap().is_none());
+        assert!(cache
+            .get_stats::<Vec<(String, i64)>>(&key)
+            .await
+            .unwrap()
+            .is_none());
 
         cache.set_stats(&key, &stats, 60).await.unwrap();
 
